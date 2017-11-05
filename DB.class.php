@@ -26,11 +26,11 @@ class DB {
     if (is_array($term)) {
       $tempArray = array();
       foreach ($term as $key => $value) {
-        $tempArray['$key'] = mysqli_real_escape_string($this->_dbConn,$value);
+        $tempArray['$key'] = $this->_dbConn->real_escape_string($value);
       }
       return $tempArray;
     } else { //it's not an array so just send it back
-        return mysqli_real_escape_string($this->_dbConn,$term);
+        return $this->_dbConn->real_escape_string($term);
     }
 
   } //end function dbEsc
@@ -91,6 +91,10 @@ class DB {
   } //end function getCaller
 
   public function dbCall($sql,$resultType = null) {
+    if (!is_resource($this->_dbConn)) {
+      $this->dbConnect();
+    }
+
     $result = $this->_dbConn->query($sql);
     if (!$result) {
       $caller = $this->getCaller();
@@ -116,13 +120,6 @@ class DB {
       } //end switch for result type
     }
   } //end function dbCall()
-
-  public function dbCallPrep($sql,$resultType = null,$params = null) {
-    
-
-
-  } //end function dbCallPrep
-
 
 } //end class DB
 ?>
