@@ -45,15 +45,15 @@ class DB {
     $this->_user = $user;
     $this->_db = $db;
 
-    $link = mysqli_connect($this->_server,$this->_user,$this->_pass);
-    if (!$link) {
-        $this->logError("Cannot connect to db at this time",mysqli_error($link));
+    $link = new mysqli($this->_server,$this->_user,$this->_pass);
+    if ($link->connect_errno) {
+        $this->logError("Cannot connect to db at this time. ",$link->connect_error);
         return false;
         exit;
     }
-    $dbSel = mysqli_select_db($link,$this->_db);
+    $dbSel = $link->select_db($this->_db);
     if (!$dbSel) {
-        $this->logError("Cannot select db: ",mysqli_error($link));
+        $this->logError("Cannot select db: ",$link->error);
         return false;
         exit;
     }
@@ -70,15 +70,15 @@ class DB {
     $this->_user = $user;
     $this->_db = $db;
 
-    $link = mysqli_connect($this->_server,$this->_user,$this->_pass);
-    if (!$link) {
-        $this->logError("Cannot connect to db at this time",mysqli_error($link));
+    $link = new mysqli($this->_server,$this->_user,$this->_pass);
+    if ($link->connect_errno) {
+        $this->logError("Cannot connect to db at this time. ",$link->connect_error);
         return false;
         exit;
     }
-    $dbSel = mysqli_select_db($link,$this->_db);
+    $dbSel = $link->select_db($this->_db);
     if (!$dbSel) {
-        $this->logError("Cannot select db: ",mysqli_error($link));
+        $this->logError("Cannot select db: ",$link->error);
         return false;
         exit;
     }
@@ -91,24 +91,24 @@ class DB {
   } //end function getCaller
 
   public function dbCall($sql,$resultType = null) {
-    $result = mysqli_query($this->_dbConn,$sql);
+    $result = $this->_dbConn->query($sql);
     if (!$result) {
       $caller = $this->getCaller();
-      $details = array('caller' => $caller,'error' => mysqli_error($this->_dbConn));
+      $details = array('caller' => $caller,'error' => $this->_dbConn->error);
       $this->logError("Error with database call",$details);
       return false;
     } //end if not result
 
     if (preg_match('/^INSERT/i',$sql)) {
-      return mysqli_insert_id($this->_dbConn);
+      return $this->_dbConn->insert_id;
     } else if (preg_match('/^UPDATE/i',$sql)) {
-      return mysqli_affected_rows($this->_dbConn);
+      return $this->_dbConn->affected_rows;
     } else {
       $returnArray = array();
       switch ($resultType) {
         default:
         case "assoc":
-          while ($resultArray = mysqli_fetch_assoc($result)) {
+          while ($resultArray = $result->fetch_assoc()) {
             $returnArray[] = $resultArray;
           }
           return $returnArray;
@@ -116,6 +116,13 @@ class DB {
       } //end switch for result type
     }
   } //end function dbCall()
+
+  public function dbCallPrep($sql,$resultType = null,$params = null) {
+    
+
+
+  } //end function dbCallPrep
+
 
 } //end class DB
 ?>
