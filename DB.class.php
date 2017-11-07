@@ -12,15 +12,39 @@ class DB {
   private $_pass = "PASSWORD";
   private $_db = "DATABASE";
 
+  public function __construct($server = MSERVER,
+                            $user = MUSER,
+                            $pass = MPASS,
+                            $db = MDB) {
+
+    $this->dbConnect($server,$user,$pass,$db);
+
+  } //end constructor
+
+  public function getConnStatus() {
+    $status = false;
+    if ($this->_dbConn) {
+      $status = true;
+    }
+    return $status;
+  } //end function getConnStatus
+
   public function logError($errorMesg = "Error",$errorDetails = null) {
     error_log($errorMesg);
-    foreach ($errorDetails as $error) {
-      error_log($error);
-    }
+    if (!is_null($errorDetails)) {  
+      if (is_array($errorDetails)) {
+        foreach ($errorDetails as $error) {
+          error_log($error);
+        }
+      }
+      else {
+        error_log($errorDetails);
+      }
+    } //end if !is_null
  }
 
   public function dbEsc($term) {
-    if (!is_resource($this->_dbConn)) {
+    if (!$this->getConnStatus()) {
       $this->dbConnect();
     }
     if (is_array($term)) {
@@ -91,7 +115,7 @@ class DB {
   } //end function getCaller
 
   public function dbCall($sql,$resultType = null) {
-    if (!is_resource($this->_dbConn)) {
+    if (!$this->getConnStatus()) {
       $this->dbConnect();
     }
 
@@ -106,6 +130,8 @@ class DB {
     if (preg_match('/^INSERT/i',$sql)) {
       return $this->_dbConn->insert_id;
     } else if (preg_match('/^UPDATE/i',$sql)) {
+      return $this->_dbConn->affected_rows;
+    } else if (preg_match('/^DELETE/i',$sql)) {
       return $this->_dbConn->affected_rows;
     } else {
       $returnArray = array();
