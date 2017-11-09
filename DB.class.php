@@ -5,7 +5,9 @@
 require_once("const.inc");
 
 class DB {
-        
+
+  //Normally don't touch these.
+  //Instead, change them in const.inc (required above)        
   private $_dbConn = null;
   private $_server = "localhost";
   private $_user = "USER";
