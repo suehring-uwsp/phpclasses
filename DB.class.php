@@ -52,7 +52,7 @@ class DB {
     if (is_array($term)) {
       $tempArray = array();
       foreach ($term as $key => $value) {
-        $tempArray['$key'] = $this->_dbConn->real_escape_string($value);
+        $tempArray[$key] = $this->_dbConn->real_escape_string($value);
       }
       return $tempArray;
     } else { //it's not an array so just send it back
