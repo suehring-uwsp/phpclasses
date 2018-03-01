@@ -2,7 +2,7 @@
 
 //this file contains constants for database connections
 //see the incoming parameters for dbConnect for example
-require_once("const.inc");
+require_once("const.php");
 
 class DB {
 
