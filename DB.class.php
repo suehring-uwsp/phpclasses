@@ -13,6 +13,7 @@ class DB {
   private $_user = "USER";
   private $_pass = "PASSWORD";
   private $_db = "DATABASE";
+  private $_dbError = null;
 
   public function __construct($server = MSERVER,
                             $user = MUSER,
@@ -32,6 +33,7 @@ class DB {
   } //end function getConnStatus
 
   public function logError($errorMesg = "Error",$errorDetails = null) {
+    $this->_dbError = $errorDetails;
     error_log($errorMesg);
     if (!is_null($errorDetails)) {  
       if (is_array($errorDetails)) {
@@ -148,6 +150,11 @@ class DB {
       } //end switch for result type
     }
   } //end function dbCall()
+
+  public function getDBError() {
+    return $this->_dbError;
+  } //end function getDBError
+
 
 } //end class DB
 ?>
